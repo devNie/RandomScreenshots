@@ -1,6 +1,20 @@
 # Compiled class file
 *.class
 
+#intelij
+.idea/
+.idea_modules/
+out/
+*.iml
+*.ipr
+*.iws
+
+#run
+run/
+
+#gradle
+build/
+
 # Log file
 *.log
 
