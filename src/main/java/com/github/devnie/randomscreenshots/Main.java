@@ -22,14 +22,20 @@ package com.github.devnie.randomscreenshots;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Random;
 
 public class Main {
 
     public static final String Version = "1.0";
-    public static final char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+    public static final char[] alphabet = "abcdefghijklmnopqrstuvwxyz0123456789".toCharArray();
     public static String currentLink;
+    public static Image fallbackImage;
 
 
     public static void getRandUrl() {   // random link generation
@@ -37,7 +43,7 @@ public class Main {
 
         for (int i = 0; i < index.length; i++) {    // first two characters of the key are letters
             if (i <= 1) {
-                index[i] = alphabet[new Random().nextInt(alphabet.length)];
+                index[i] = alphabet[new Random().nextInt(alphabet.length-1)];
             } else {
                 index[i] = Character.forDigit(new Random().nextInt(10), 10);
             }
@@ -63,7 +69,22 @@ public class Main {
 
     public static void main(String[] args) { // App initialization
         getRandUrl();
-        Window.setImage(getImageUrl(currentLink));
+        try {
+            fallbackImage = ImageIO.read(Objects.requireNonNull(Main.class.getResourceAsStream("fallBackImg.png")));
+        }catch (IOException e){
+            e.printStackTrace();
+            return;
+        }
+
+        BufferedImage img = null;
+        try {
+            img = Window.getImg(getImageUrl(currentLink));
+
+        }catch (IOException e){
+            img = (BufferedImage) fallbackImage;
+        }
+        Window.setImage(img);
+       
         Window.create();
     }
 }
