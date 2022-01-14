@@ -29,8 +29,11 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+
+import static com.github.devnie.randomscreenshots.Main.fallbackImage;
+import static com.github.devnie.randomscreenshots.Main.getImageUrl;
 
 
 public class Window {
@@ -99,7 +102,14 @@ public class Window {
         button.addActionListener(e -> { // generates a new url and refreshes the content pane
             Main.getRandUrl();
             currentURL.setText(Main.currentLink);
-            setImage(Main.getImageUrl(Main.currentLink));
+            BufferedImage img = null;
+            try {
+                img = Window.getImg(getImageUrl(Main.currentLink));
+
+            }catch (IOException exception){
+                img = (BufferedImage) fallbackImage;
+            }
+            Window.setImage(img);
             content.revalidate();
             content.repaint();
             window.pack();
@@ -123,25 +133,16 @@ public class Window {
     }
 
 
-    public static void setImage(String url) {
+    public static BufferedImage getImg(String url) throws IOException {
         BufferedImage bffImg = null;
         assert url != null;
 
-        try {
-            bffImg = ImageIO.read(new URL(url));
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            try {
-                bffImg = ImageIO.read(new File("out/production/RandomScreens/com/company/resources/fallbackimg.png")); // fallback image
-            } catch (Exception e2) {
-                e2.printStackTrace();
-            }
-        }
+        bffImg = ImageIO.read(new URL(url));
+        return bffImg;
 
+    }
 
-        assert bffImg != null;
-
+     static void setImage(BufferedImage bffImg) {
         if (bffImg.getWidth() > (screen.getWidth()*0.6) || (bffImg.getHeight() > screen.getHeight()*0.6)) { // prevents images larger than 2/3 of either screen dimension
 
             double significanceY = (screen.getHeight()*0.6) / bffImg.getHeight(); // for sake of readability (calculates factor that will bring the image width or height to max size of 0.6 screen dimension)
@@ -157,7 +158,6 @@ public class Window {
         } else {
             image.setImage(bffImg);
         }
-
     }
 
 }
