@@ -18,7 +18,7 @@
 
 */
 
-package com.company;
+package com.github.devnie.randomscreenshots;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

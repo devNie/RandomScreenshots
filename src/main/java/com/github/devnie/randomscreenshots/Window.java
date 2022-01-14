@@ -18,7 +18,7 @@
 
 */
 
-package com.company;
+package com.github.devnie.randomscreenshots;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
