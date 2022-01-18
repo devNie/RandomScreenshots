@@ -42,11 +42,7 @@ public class Main {
         char[] index = new char[6];
 
         for (int i = 0; i < index.length; i++) {    // first two characters of the key are letters
-            if (i <= 1) {
-                index[i] = alphabet[new Random().nextInt(alphabet.length-1)];
-            } else {
-                index[i] = Character.forDigit(new Random().nextInt(10), 10);
-            }
+            index[i] = alphabet[new Random().nextInt(alphabet.length-1)];
         }
 
         currentLink = ("https://prnt.sc/"+String.valueOf(index));
@@ -76,11 +72,12 @@ public class Main {
             return;
         }
 
-        BufferedImage img = null;
+        BufferedImage img;
         try {
             img = Window.getImg(getImageUrl(currentLink));
 
         }catch (IOException e){
+            e.printStackTrace();
             img = (BufferedImage) fallbackImage;
         }
         Window.setImage(img);

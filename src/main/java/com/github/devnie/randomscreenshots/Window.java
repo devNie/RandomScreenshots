@@ -30,6 +30,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 import static com.github.devnie.randomscreenshots.Main.fallbackImage;
@@ -102,7 +103,7 @@ public class Window {
         button.addActionListener(e -> { // generates a new url and refreshes the content pane
             Main.getRandUrl();
             currentURL.setText(Main.currentLink);
-            BufferedImage img = null;
+            BufferedImage img;
             try {
                 img = Window.getImg(getImageUrl(Main.currentLink));
 
@@ -134,19 +135,28 @@ public class Window {
 
 
     public static BufferedImage getImg(String url) throws IOException {
-        BufferedImage bffImg = null;
+        BufferedImage bffImg;
         assert url != null;
 
-        bffImg = ImageIO.read(new URL(url));
+        HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+
+        conn.setRequestProperty (   // circumvents 403 by setting correct user agent info
+                "User-Agent",
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31"
+        );
+
+        bffImg = ImageIO.read(conn.getInputStream());
+        conn.disconnect();
+
         return bffImg;
 
     }
 
      static void setImage(BufferedImage bffImg) {
-        if (bffImg.getWidth() > (screen.getWidth()*0.6) || (bffImg.getHeight() > screen.getHeight()*0.6)) { // prevents images larger than 2/3 of either screen dimension
+        if (bffImg.getWidth() > (screen.getWidth()*0.8) || (bffImg.getHeight() > screen.getHeight()*0.8)) { // prevents images larger than 2/3 of either screen dimension
 
-            double significanceY = (screen.getHeight()*0.6) / bffImg.getHeight(); // for sake of readability (calculates factor that will bring the image width or height to max size of 0.6 screen dimension)
-            double significanceX = (screen.getWidth()*0.6) / bffImg.getHeight();
+            double significanceY = (screen.getHeight()*0.8) / bffImg.getHeight(); // for sake of readability (calculates factor that will bring the image width or height to max size of 0.6 screen dimension)
+            double significanceX = (screen.getWidth()*0.8) / bffImg.getWidth();
 
             double scaleFactor = Math.min(significanceY, significanceX);  // Scale factor (more significant image dimension)
 
